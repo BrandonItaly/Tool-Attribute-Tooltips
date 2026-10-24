@@ -1,9 +1,11 @@
 package io.github.brandonitaly.toolattributetooltips;
 
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
@@ -12,7 +14,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.Tool;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.Blocks;
@@ -41,6 +42,11 @@ public class ToolAttributeTooltips /*? if fabric {*/ implements ModInitializer /
         Map.entry(ItemTags.HOES, Blocks.NETHER_WART_BLOCK.defaultBlockState())
     );
 
+    public static final Holder<Attribute> CHOP_EFFICIENCY = Holder.direct(
+        new Attribute("attribute.name.chop_efficiency", 0.0) {});
+    public static final Holder<Attribute> DIG_EFFICIENCY = Holder.direct(
+        new Attribute("attribute.name.dig_efficiency", 0.0) {});
+
     //? if fabric {
     @Override
     public void onInitialize() {
@@ -53,39 +59,24 @@ public class ToolAttributeTooltips /*? if fabric {*/ implements ModInitializer /
     public static Float getMiningSpeed(ItemStack stack) {
         if (stack == null || stack.isEmpty() || stack.is(ItemTags.SWORDS)) return null;
 
-        float baseSpeed = 1.0f;
-
-        try {
-            Tool tool = stack.get(DataComponents.TOOL);
-            if (tool != null) {
-                for (Tool.Rule rule : tool.rules()) {
-                    if (rule.blocks().unwrapKey().isPresent() &&
-                        rule.blocks().unwrapKey().get().location().getPath().contains("sword")) {
-                        return null;
-                    }
-                }
-
-                baseSpeed = tool.defaultMiningSpeed();
-
-                for (Tool.Rule rule : tool.rules()) {
-                    if (rule.speed().isPresent() && rule.speed().get() > baseSpeed) {
-                        baseSpeed = rule.speed().get();
-                    }
-                }
-            }
-        } catch (Throwable ignored) {}
-
-        // Fallback for custom tool items overriding getDestroySpeed()
-        if (baseSpeed <= 1.0f) {
-            for (var probe : DESTROY_SPEED_PROBES) {
-                if (stack.is(probe.getKey())) {
-                    baseSpeed = stack.getDestroySpeed(probe.getValue());
-                    break;
-                }
+        for (var probe : DESTROY_SPEED_PROBES) {
+            float speed = stack.getDestroySpeed(probe.getValue());
+            if (speed > 1.0f) {
+                return speed;
             }
         }
+        return null;
+    }
 
-        return baseSpeed > 1.0f ? baseSpeed : null;
+    public static Holder<Attribute> getMiningAttribute(ItemStack stack) {
+        if (stack == null || stack.isEmpty() || stack.is(ItemTags.SWORDS)) return null;
+
+        for (int i = 0; i < DESTROY_SPEED_PROBES.size(); i++) {
+            if (stack.getDestroySpeed(DESTROY_SPEED_PROBES.get(i).getValue()) > 1.0f) {
+                return i == 1 ? CHOP_EFFICIENCY : i == 2 ? DIG_EFFICIENCY : Attributes.MINING_EFFICIENCY;
+            }
+        }
+        return null;
     }
 
     public static AttributeModifier getCombinedMiningModifier(ItemStack stack, float baseSpeed) {

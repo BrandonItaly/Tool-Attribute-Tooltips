@@ -23,6 +23,7 @@ public class NeoForgeAttributeTooltipMixin {
         ItemStack stack, EquipmentSlotGroup group) {
         Multimap<Holder<Attribute>, AttributeModifier> modifiers = AttributeUtil.getSortedModifiers(stack, group);
         Float baseSpeed = ToolAttributeTooltips.getMiningSpeed(stack);
+        Holder<Attribute> miningAttribute = ToolAttributeTooltips.getMiningAttribute(stack);
         AttributeModifier attackDamage = ToolAttributeTooltips.getCombinedAttackDamageModifier(stack);
         if (attackDamage != null && group.test(EquipmentSlot.MAINHAND)) {
             modifiers.removeAll(Attributes.ATTACK_DAMAGE);
@@ -30,10 +31,10 @@ public class NeoForgeAttributeTooltipMixin {
                 modifiers.put(Attributes.ATTACK_DAMAGE, attackDamage);
             }
         }
-        if (baseSpeed != null && group.test(EquipmentSlot.MAINHAND)) {
+        if (miningAttribute != null && group.test(EquipmentSlot.MAINHAND)) {
             modifiers.removeAll(Attributes.MINING_EFFICIENCY);
             if (group == EquipmentSlotGroup.MAINHAND) {
-                modifiers.put(Attributes.MINING_EFFICIENCY,
+                modifiers.put(miningAttribute,
                     ToolAttributeTooltips.getCombinedMiningModifier(stack, baseSpeed));
             }
         }

@@ -28,13 +28,14 @@ public class ItemStackMixin {
     private void toolattributetooltips$combinedStats(ItemStack stack, EquipmentSlotGroup group,
         TriConsumer<Holder<Attribute>, AttributeModifier, ItemAttributeModifiers.Display> consumer) {
         Float baseSpeed = ToolAttributeTooltips.getMiningSpeed(stack);
+        Holder<Attribute> miningAttribute = ToolAttributeTooltips.getMiningAttribute(stack);
         AttributeModifier attackDamage = ToolAttributeTooltips.getCombinedAttackDamageModifier(stack);
-        if ((baseSpeed == null && attackDamage == null) || !group.test(EquipmentSlot.MAINHAND)) {
+        if ((miningAttribute == null && attackDamage == null) || !group.test(EquipmentSlot.MAINHAND)) {
             stack.forEachModifier(group, consumer);
             return;
         }
         stack.forEachModifier(group, (attribute, modifier, display) -> {
-            if (!(baseSpeed != null && attribute.equals(Attributes.MINING_EFFICIENCY))
+            if (!(miningAttribute != null && attribute.equals(Attributes.MINING_EFFICIENCY))
                 && !(attackDamage != null && attribute.equals(Attributes.ATTACK_DAMAGE))) {
                 consumer.accept(attribute, modifier, display);
             }
@@ -43,8 +44,8 @@ public class ItemStackMixin {
             consumer.accept(Attributes.ATTACK_DAMAGE, attackDamage,
                 ItemAttributeModifiers.Display.attributeModifiers());
         }
-        if (baseSpeed != null && group == EquipmentSlotGroup.MAINHAND) {
-            consumer.accept(Attributes.MINING_EFFICIENCY, ToolAttributeTooltips.getCombinedMiningModifier(stack, baseSpeed),
+        if (miningAttribute != null && group == EquipmentSlotGroup.MAINHAND) {
+            consumer.accept(miningAttribute, ToolAttributeTooltips.getCombinedMiningModifier(stack, baseSpeed),
                 ItemAttributeModifiers.Display.attributeModifiers());
         }
     }
@@ -54,13 +55,14 @@ public class ItemStackMixin {
     private void toolattributetooltips$combinedStats(ItemStack stack, EquipmentSlotGroup group,
         BiConsumer<Holder<Attribute>, AttributeModifier> consumer) {
         Float baseSpeed = ToolAttributeTooltips.getMiningSpeed(stack);
+        Holder<Attribute> miningAttribute = ToolAttributeTooltips.getMiningAttribute(stack);
         AttributeModifier attackDamage = ToolAttributeTooltips.getCombinedAttackDamageModifier(stack);
-        if ((baseSpeed == null && attackDamage == null) || !group.test(EquipmentSlot.MAINHAND)) {
+        if ((miningAttribute == null && attackDamage == null) || !group.test(EquipmentSlot.MAINHAND)) {
             stack.forEachModifier(group, consumer);
             return;
         }
         stack.forEachModifier(group, (attribute, modifier) -> {
-            if (!(baseSpeed != null && attribute.equals(Attributes.MINING_EFFICIENCY))
+            if (!(miningAttribute != null && attribute.equals(Attributes.MINING_EFFICIENCY))
                 && !(attackDamage != null && attribute.equals(Attributes.ATTACK_DAMAGE))) {
                 consumer.accept(attribute, modifier);
             }
@@ -68,8 +70,8 @@ public class ItemStackMixin {
         if (attackDamage != null && group == EquipmentSlotGroup.MAINHAND) {
             consumer.accept(Attributes.ATTACK_DAMAGE, attackDamage);
         }
-        if (baseSpeed != null && group == EquipmentSlotGroup.MAINHAND) {
-            consumer.accept(Attributes.MINING_EFFICIENCY, ToolAttributeTooltips.getCombinedMiningModifier(stack, baseSpeed));
+        if (miningAttribute != null && group == EquipmentSlotGroup.MAINHAND) {
+            consumer.accept(miningAttribute, ToolAttributeTooltips.getCombinedMiningModifier(stack, baseSpeed));
         }
     }
     *///?}
