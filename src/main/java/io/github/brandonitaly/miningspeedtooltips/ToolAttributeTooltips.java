@@ -33,7 +33,7 @@ import net.neoforged.bus.api.IEventBus;
 /*@Mod(ToolAttributeTooltips.MOD_ID)
 *///?}
 public class ToolAttributeTooltips /*? if fabric {*/ implements ModInitializer /*?}*/ {
-    public static final String MOD_ID = "miningspeedindicators";
+    public static final String MOD_ID = "toolattributetooltips";
 
     private static final List<Map.Entry<TagKey<Item>, BlockState>> DESTROY_SPEED_PROBES = List.of(
         Map.entry(ItemTags.PICKAXES, Blocks.STONE.defaultBlockState()),

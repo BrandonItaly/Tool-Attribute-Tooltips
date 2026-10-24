@@ -1,1 +1,2 @@
 - Add Chop Efficiency and Dig Efficiency tooltip attributes
+- Fixed an issue that prevented the mod from loading on NeoForge
