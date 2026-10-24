@@ -18,7 +18,7 @@ class UniversalJarTest {
 
     private byte[] exampleClass(boolean neoForge) {
         ClassWriter writer = new ClassWriter(0);
-        String owner = UniversalJar.ORIGINAL + "/MiningSpeedTooltips";
+        String owner = UniversalJar.ORIGINAL + "/ToolAttributeTooltips";
         writer.visit(Opcodes.V21, Opcodes.ACC_PUBLIC, owner, null, "java/lang/Object", null);
         writer.visitField(Opcodes.ACC_PUBLIC, "self", "L" + owner + ";", null, null).visitEnd();
         writer.visitField(Opcodes.ACC_PUBLIC, "minecraft", neoForge
@@ -36,18 +36,18 @@ class UniversalJarTest {
     private Path input(String name, boolean neoForge, String asset) throws IOException {
         Path path = directory.resolve(name);
         Map<String, byte[]> entries = new LinkedHashMap<>();
-        entries.put(UniversalJar.ORIGINAL + "/MiningSpeedTooltips.class", exampleClass(neoForge));
+        entries.put(UniversalJar.ORIGINAL + "/ToolAttributeTooltips.class", exampleClass(neoForge));
         entries.put(neoForge ? "META-INF/neoforge.mods.toml" : "fabric.mod.json",
-            (neoForge ? "config=\"miningspeedindicators.mixins.json\"" : "{\"id\":\"miningspeedindicators\"}").getBytes(StandardCharsets.UTF_8));
-        entries.put("miningspeedindicators.mixins.json", ("{\"package\":\"" + UniversalJar.ORIGINAL.replace('/', '.')
-            + ".mixin\",\"refmap\":\"miningspeedindicators.refmap.json\"}").getBytes(StandardCharsets.UTF_8));
-        entries.put("miningspeedindicators.refmap.json", ("{\"mappings\":{\"" + UniversalJar.ORIGINAL
+            (neoForge ? "config=\"toolattributetooltips.mixins.json\"" : "{\"id\":\"toolattributetooltips\"}").getBytes(StandardCharsets.UTF_8));
+        entries.put("toolattributetooltips.mixins.json", ("{\"package\":\"" + UniversalJar.ORIGINAL.replace('/', '.')
+            + ".mixin\",\"refmap\":\"toolattributetooltips.refmap.json\"}").getBytes(StandardCharsets.UTF_8));
+        entries.put("toolattributetooltips.refmap.json", ("{\"mappings\":{\"" + UniversalJar.ORIGINAL
             + "/mixin/Example\":{}}}").getBytes(StandardCharsets.UTF_8));
         entries.put("META-INF/MANIFEST.MF", ("Manifest-Version: 1.0\r\n" + (neoForge
-            ? "Automatic-Module-Name: miningspeedindicators\r\n"
+            ? "Automatic-Module-Name: toolattributetooltips\r\n"
             : "Fabric-Loom-Mixin-Remap-Type: static\r\nFabric-Mapping-Namespace: intermediary\r\n")
             + "\r\n").getBytes(StandardCharsets.UTF_8));
-        entries.put("assets/miningspeedindicators/test.txt", asset.getBytes(StandardCharsets.UTF_8));
+        entries.put("assets/toolattributetooltips/test.txt", asset.getBytes(StandardCharsets.UTF_8));
         try (var zip = new ZipOutputStream(Files.newOutputStream(path))) {
             for (var entry : entries.entrySet()) {
                 zip.putNextEntry(new ZipEntry(entry.getKey()));
@@ -67,36 +67,36 @@ class UniversalJarTest {
         Path output = directory.resolve("universal.jar");
         UniversalJar.merge(input("fabric.jar", false, "shared"), input("neo.jar", true, "shared"), output);
         try (var zip = new ZipFile(output.toFile())) {
-            assertArrayEquals(exampleClass(false), read(zip, UniversalJar.ORIGINAL + "/MiningSpeedTooltips.class"));
-            new ClassReader(read(zip, UniversalJar.NEOFORGE + "/MiningSpeedTooltips.class")).accept(new ClassVisitor(Opcodes.ASM9) {
+            assertArrayEquals(exampleClass(false), read(zip, UniversalJar.ORIGINAL + "/ToolAttributeTooltips.class"));
+            new ClassReader(read(zip, UniversalJar.NEOFORGE + "/ToolAttributeTooltips.class")).accept(new ClassVisitor(Opcodes.ASM9) {
                 @Override public void visit(int version, int access, String name, String signature, String parent, String[] interfaces) {
-                    assertEquals(UniversalJar.NEOFORGE + "/MiningSpeedTooltips", name);
+                    assertEquals(UniversalJar.NEOFORGE + "/ToolAttributeTooltips", name);
                 }
                 @Override public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
-                    assertEquals(name.equals("self") ? "L" + UniversalJar.NEOFORGE + "/MiningSpeedTooltips;"
+                    assertEquals(name.equals("self") ? "L" + UniversalJar.NEOFORGE + "/ToolAttributeTooltips;"
                         : "Lnet/minecraft/client/Minecraft;", descriptor);
                     return null;
                 }
                 @Override public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
                     return new MethodVisitor(Opcodes.ASM9) {
                         @Override public void visitLdcInsn(Object value) {
-                            assertEquals(UniversalJar.NEOFORGE.replace('/', '.') + ".MiningSpeedTooltips", value);
+                            assertEquals(UniversalJar.NEOFORGE.replace('/', '.') + ".ToolAttributeTooltips", value);
                         }
                     };
                 }
             }, 0);
             assertTrue(new String(read(zip, "META-INF/neoforge.mods.toml"), StandardCharsets.UTF_8)
-                .contains("miningspeedindicators-neoforge.mixins.json"));
-            String config = new String(read(zip, "miningspeedindicators-neoforge.mixins.json"), StandardCharsets.UTF_8);
-            assertTrue(config.contains("miningspeedtooltips_neoforge.mixin"));
-            assertTrue(config.contains("miningspeedindicators-neoforge.refmap.json"));
-            assertTrue(new String(read(zip, "miningspeedindicators-neoforge.refmap.json"), StandardCharsets.UTF_8)
+                .contains("toolattributetooltips-neoforge.mixins.json"));
+            String config = new String(read(zip, "toolattributetooltips-neoforge.mixins.json"), StandardCharsets.UTF_8);
+            assertTrue(config.contains("toolattributetooltips_neoforge.mixin"));
+            assertTrue(config.contains("toolattributetooltips-neoforge.refmap.json"));
+            assertTrue(new String(read(zip, "toolattributetooltips-neoforge.refmap.json"), StandardCharsets.UTF_8)
                 .contains(UniversalJar.NEOFORGE + "/mixin/Example"));
             var manifest = new Manifest(new ByteArrayInputStream(read(zip, "META-INF/MANIFEST.MF")));
-            assertEquals("miningspeedindicators", manifest.getMainAttributes().getValue("Automatic-Module-Name"));
+            assertEquals("toolattributetooltips", manifest.getMainAttributes().getValue("Automatic-Module-Name"));
             assertEquals("static", manifest.getMainAttributes().getValue("Fabric-Loom-Mixin-Remap-Type"));
             assertEquals("intermediary", manifest.getMainAttributes().getValue("Fabric-Mapping-Namespace"));
-            assertEquals(1, zip.stream().filter(entry -> entry.getName().equals("assets/miningspeedindicators/test.txt")).count());
+            assertEquals(1, zip.stream().filter(entry -> entry.getName().equals("assets/toolattributetooltips/test.txt")).count());
             assertNull(zip.getEntry("META-INF/mods.toml"));
         }
     }

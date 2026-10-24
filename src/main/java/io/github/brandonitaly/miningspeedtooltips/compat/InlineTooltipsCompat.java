@@ -1,4 +1,4 @@
-package io.github.brandonitaly.miningspeedtooltips.compat;
+package io.github.brandonitaly.toolattributetooltips.compat;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;

@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "io.github.brandonitaly.miningspeedtooltips.mixin",
+  "package": "io.github.brandonitaly.toolattributetooltips.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
     "${tooltip_mixin}",

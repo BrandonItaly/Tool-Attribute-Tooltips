@@ -16,8 +16,8 @@ import java.util.zip.*;
 
 /** Combines loader release jars without changing their Minecraft mappings. */
 public abstract class UniversalJar extends DefaultTask {
-    static final String ORIGINAL = "io/github/brandonitaly/miningspeedtooltips";
-    static final String NEOFORGE = "io/github/brandonitaly/miningspeedtooltips_neoforge";
+    static final String ORIGINAL = "io/github/brandonitaly/toolattributetooltips";
+    static final String NEOFORGE = "io/github/brandonitaly/toolattributetooltips_neoforge";
     private static final String MANIFEST = "META-INF/MANIFEST.MF";
 
     @InputFile @PathSensitive(PathSensitivity.NONE)
@@ -40,8 +40,8 @@ public abstract class UniversalJar extends DefaultTask {
         read(fabric, entries, false);
         read(neoForge, entries, true);
         for (String required : List.of("fabric.mod.json", "META-INF/neoforge.mods.toml",
-                "miningspeedindicators.mixins.json", "miningspeedindicators-neoforge.mixins.json",
-                ORIGINAL + "/MiningSpeedTooltips.class", NEOFORGE + "/MiningSpeedTooltips.class")) {
+                "toolattributetooltips.mixins.json", "toolattributetooltips-neoforge.mixins.json",
+                ORIGINAL + "/ToolAttributeTooltips.class", NEOFORGE + "/ToolAttributeTooltips.class")) {
             if (!entries.containsKey(required)) throw new IOException("Missing combined jar entry: " + required);
         }
         Files.createDirectories(output.toAbsolutePath().getParent());

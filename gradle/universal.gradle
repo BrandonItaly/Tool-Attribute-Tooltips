@@ -23,7 +23,7 @@ rootProject.childProjects.values().findAll { it.name.endsWith('-fabric') }.each 
         fabricJar.set(providers.provider { fabric.tasks.named(fabricJarTask).get().archiveFile.get() })
         neoForgeJar.set(providers.provider { neoForge.tasks.named('jar').get().archiveFile.get() })
         outputJar.set(layout.buildDirectory.file(providers.gradleProperty('mod_version').map {
-            "libs/${it}/MiningSpeedIndicators-${minecraftVersion}-${it}.jar"
+            "libs/${it}/${rootProject.archives_base_name}-${minecraftVersion}-${it}.jar"
         }))
     }
     allUniversal.configure { dependsOn universal }

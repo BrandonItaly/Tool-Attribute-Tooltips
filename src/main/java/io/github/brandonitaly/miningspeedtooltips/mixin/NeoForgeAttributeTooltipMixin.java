@@ -1,7 +1,7 @@
 //? if neoforge && >1.21.8 {
-/*package io.github.brandonitaly.miningspeedtooltips.mixin;
+/*package io.github.brandonitaly.toolattributetooltips.mixin;
 
-import io.github.brandonitaly.miningspeedtooltips.MiningSpeedTooltips;
+import io.github.brandonitaly.toolattributetooltips.ToolAttributeTooltips;
 import com.google.common.collect.Multimap;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -19,15 +19,22 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class NeoForgeAttributeTooltipMixin {
     @Redirect(method = "applyModifierTooltips", at = @At(value = "INVOKE", target =
         "Lnet/neoforged/neoforge/common/util/AttributeUtil;getSortedModifiers(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/EquipmentSlotGroup;)Lcom/google/common/collect/Multimap;"))
-    private static Multimap<Holder<Attribute>, AttributeModifier> miningspeedtooltips$combinedEfficiency(
+    private static Multimap<Holder<Attribute>, AttributeModifier> toolattributetooltips$combinedStats(
         ItemStack stack, EquipmentSlotGroup group) {
         Multimap<Holder<Attribute>, AttributeModifier> modifiers = AttributeUtil.getSortedModifiers(stack, group);
-        Float baseSpeed = MiningSpeedTooltips.getMiningSpeed(stack);
+        Float baseSpeed = ToolAttributeTooltips.getMiningSpeed(stack);
+        AttributeModifier attackDamage = ToolAttributeTooltips.getCombinedAttackDamageModifier(stack);
+        if (attackDamage != null && group.test(EquipmentSlot.MAINHAND)) {
+            modifiers.removeAll(Attributes.ATTACK_DAMAGE);
+            if (group == EquipmentSlotGroup.MAINHAND) {
+                modifiers.put(Attributes.ATTACK_DAMAGE, attackDamage);
+            }
+        }
         if (baseSpeed != null && group.test(EquipmentSlot.MAINHAND)) {
             modifiers.removeAll(Attributes.MINING_EFFICIENCY);
             if (group == EquipmentSlotGroup.MAINHAND) {
                 modifiers.put(Attributes.MINING_EFFICIENCY,
-                    MiningSpeedTooltips.getCombinedMiningModifier(stack, baseSpeed));
+                    ToolAttributeTooltips.getCombinedMiningModifier(stack, baseSpeed));
             }
         }
         return modifiers;

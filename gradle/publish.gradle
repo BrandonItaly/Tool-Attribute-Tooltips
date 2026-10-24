@@ -57,7 +57,7 @@ publishMods {
 tasks.named('publishMods') {
     doFirst {
         if (!curseforgeProject && !modrinthProject) {
-            throw new GradleException('Set curseforge_id and/or modrinth_id to your Mining Speed Indicators project IDs in gradle.properties.')
+            throw new GradleException('Set curseforge_id and/or modrinth_id to your Tool Efficiency Tooltips project IDs in gradle.properties.')
         }
     }
 }

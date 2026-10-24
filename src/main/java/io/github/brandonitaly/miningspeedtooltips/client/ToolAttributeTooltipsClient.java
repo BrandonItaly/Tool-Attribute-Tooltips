@@ -1,4 +1,4 @@
-package io.github.brandonitaly.miningspeedtooltips.client;
+package io.github.brandonitaly.toolattributetooltips.client;
 
 //? if fabric {
 import net.fabricmc.api.ClientModInitializer;
@@ -7,7 +7,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.neoforged.fml.ModContainer;
 *///?}
 
-public class MiningSpeedTooltipsClient /*? if fabric {*/ implements ClientModInitializer /*?}*/ {
+public class ToolAttributeTooltipsClient /*? if fabric {*/ implements ClientModInitializer /*?}*/ {
 
     //? if fabric {
     @Override

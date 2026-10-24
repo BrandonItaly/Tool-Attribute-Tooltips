@@ -24,4 +24,4 @@ stonecutter {
     }
 }
 
-rootProject.name = "Mining Speed Indicators"
+rootProject.name = "Tool Attribute Tooltips"
